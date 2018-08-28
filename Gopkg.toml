@@ -26,13 +26,12 @@
 
 
 [[constraint]]
-  branch = "master"
+  revision = "49cda78d23e6837df7697c07766b60fd422216b8"
   name = "github.com/ipsn/go-ipfs"
 
 [[override]]
-  name = "github.com/hashicorp/golang-lru"
-  revision = "0fb14efe8c47ae851c0034ed7a448854d3d34cf3"
+  revision = "36e9d2ebbde5e3f13ab2e25625fd453271d6522e" # "v1.1.0"
+  name = "github.com/satori/go.uuid"
 
 [prune]
-  go-tests = true
   unused-packages = true
