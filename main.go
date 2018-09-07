@@ -35,14 +35,6 @@ func main() {
 		panic(fmt.Sprintf("error wrapping: %v", err))
 	}
 
-	bootstrap, err := core.NewNode(context.TODO(), &core.BuildCfg{Online: true})
-	if err != nil {
-		panic(fmt.Sprintf("error new node: %v", err))
-	}
-
-	c, _ := bootstrap.Repo.Config()
-	log.Infof("bootstrap: %v", c.Addresses)
-
 	if *shouldPut {
 
 		log.Infof("putting node")
@@ -67,6 +59,8 @@ func main() {
 		if err != nil {
 			panic(err)
 		}
+		node.Blockstore.PinLock().Unlock()
+
 		rnode, _ := node.DAG.Get(context.TODO(), cNode.Cid())
 		fmt.Printf("got node: %v", rnode)
 	} else {
@@ -76,6 +70,9 @@ func main() {
 		if err != nil {
 			log.Fatalf("Failed to start IPFS node: %v", err)
 		}
+
+		log.Info("sleeping for 15 seconds")
+		time.Sleep(15 * time.Second)
 
 		log.Info("finding providers")
 		peers, _ := node2.DHT.FindProviders(ctx, cNode.Cid())
