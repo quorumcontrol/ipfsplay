@@ -75,7 +75,7 @@ func main() {
 		time.Sleep(15 * time.Second)
 
 		log.Info("finding providers")
-		peers, _ := node2.DHT.FindProviders(ctx, cNode.Cid())
+		peers := node2.DHT.FindProvidersAsync(ctx, cNode.Cid(), 300)
 		log.Infof("peers found: %d", len(peers))
 
 		log.Infof("getting cnode from 2: %v\n", cNode.Cid().String())
