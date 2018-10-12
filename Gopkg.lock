@@ -215,6 +215,49 @@
   revision = "1395d1447324cbea88d249fbfcfd70ea878fdfca"
 
 [[projects]]
+  digest = "1:f147b9478d08ff3880ddf082e61ee9de8b8ea5143c35fbc4571df59abd837753"
+  name = "github.com/ipfs/go-block-format"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "071a086542e0c24bfd773f68aead14ceb77bc817"
+  version = "v0.2.0"
+
+[[projects]]
+  digest = "1:9999472bf9c934426d967c507d61f2de84affb8318b8d8c8bc38b3486edbd826"
+  name = "github.com/ipfs/go-cid"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "6e296c5c49ad84dc6a44af69fa1fe4e1245cd0cf"
+  version = "v0.9.0"
+
+[[projects]]
+  digest = "1:aae82c244bd91107575a0244a29e82e34ba23e06b6892557e33728de48deba96"
+  name = "github.com/ipfs/go-ipfs-util"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "10d786c5ed859afd22223df76a89bf57b24b2ee1"
+  version = "v1.2.8"
+
+[[projects]]
+  digest = "1:80eabf666b7054b73b6888cf827f72d5d4356d87edae3274d42acdccf45fbc74"
+  name = "github.com/ipfs/go-ipld-cbor"
+  packages = [
+    ".",
+    "encoding",
+  ]
+  pruneopts = "UT"
+  revision = "2e6de03042b7c11dcfafb0c507963a037bc09b55"
+  version = "v1.5.0"
+
+[[projects]]
+  digest = "1:d188e3b33004fef0f960a95843a1f5ae9a5c9bd9d51c7a2fabf988e8c32b7d6f"
+  name = "github.com/ipfs/go-ipld-format"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "6b969cac91a29d376091d768815ef260a15ebdfc"
+  version = "v0.6.0"
+
+[[projects]]
   digest = "1:97a2906506f17c461fbfc1a1f3f06c15fe96f10316df56a6ed4cdda49c9119d7"
   name = "github.com/ipsn/go-ipfs"
   packages = [
@@ -506,6 +549,22 @@
   version = "v1.0.0"
 
 [[projects]]
+  digest = "1:28e83f2abf3e3c83b9ad533a4295bdff102f94868b06d5f7bfe71c5477d81c8f"
+  name = "github.com/multiformats/go-multibase"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "bb91b53e5695e699a86654d77d03db7bc7506d12"
+  version = "v0.3.0"
+
+[[projects]]
+  digest = "1:c0ea71365e7d0e63a2e8f48e6fc2ba92f2f2b739bbeb3cdabdcd719037e175c2"
+  name = "github.com/multiformats/go-multihash"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "8be2a682ab9f254311de1375145a2f78a809b07d"
+  version = "v1.0.8"
+
+[[projects]]
   digest = "1:450b7623b185031f3a456801155c8320209f75d0d4c4e633c6b1e59d44d6e392"
   name = "github.com/opentracing/opentracing-go"
   packages = [
@@ -524,6 +583,22 @@
   pruneopts = "UT"
   revision = "645ef00459ed84a119197bfb8d8205042c6df63d"
   version = "v0.8.0"
+
+[[projects]]
+  branch = "master"
+  digest = "1:3afb8fdb5f6af1fd5e520dcbc276247ac07a8f5324e451fefc743ad4f1ac7b36"
+  name = "github.com/polydawn/refmt"
+  packages = [
+    ".",
+    "cbor",
+    "json",
+    "obj",
+    "obj/atlas",
+    "shared",
+    "tok",
+  ]
+  pruneopts = "UT"
+  revision = "57f76afce9084f1463337a5856388c5b458e062e"
 
 [[projects]]
   digest = "1:ff6b0586c0621a76832cf783eee58cbb9d9795d2ce8acbc199a4131db11c42a9"
@@ -560,6 +635,14 @@
   ]
   pruneopts = "UT"
   revision = "6b91fda63f2e36186f1c9d0e48578defb69c5d43"
+
+[[projects]]
+  branch = "master"
+  digest = "1:98fa13beefbf581ec173561adad6374c460631593b4bdcf03adc29cd18e5d2f5"
+  name = "github.com/whyrusleeping/base32"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "c30ac30633ccdabefe87eb12465113f06f1bab75"
 
 [[projects]]
   branch = "master"
@@ -657,11 +740,13 @@
   analyzer-version = 1
   input-imports = [
     "github.com/golang/glog",
+    "github.com/ipfs/go-ipld-cbor",
     "github.com/ipsn/go-ipfs/core",
     "github.com/ipsn/go-ipfs/core/coreunix",
     "github.com/ipsn/go-ipfs/gxlibs/github.com/ipfs/go-ipfs-chunker",
     "github.com/ipsn/go-ipfs/gxlibs/github.com/ipfs/go-ipld-format",
     "github.com/ipsn/go-ipfs/gxlibs/github.com/ipfs/go-log",
+    "github.com/ipsn/go-ipfs/gxlibs/github.com/multiformats/go-multihash",
     "github.com/ipsn/go-ipfs/importer/balanced",
     "github.com/ipsn/go-ipfs/importer/helpers",
     "github.com/ipsn/go-ipfs/importer/trickle",

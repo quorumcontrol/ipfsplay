@@ -1,0 +1,9 @@
+version: "3"
+
+services:
+  alice:
+    build: .
+    command: ["/go/bin/ipfsplay", "-p"]
+  bob:
+    build: .
+    command: ["/go/bin/ipfsplay"]
