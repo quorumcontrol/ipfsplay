@@ -6,17 +6,17 @@ import (
 	"os"
 	"path/filepath"
 
-	chunk "github.com/ipfs/go-ipfs-chunker"
-	ipld "github.com/ipfs/go-ipld-format"
+	chunk "github.com/ipsn/go-ipfs/gxlibs/github.com/ipfs/go-ipfs-chunker"
+	ipld "github.com/ipsn/go-ipfs/gxlibs/github.com/ipfs/go-ipld-format"
 
 	"github.com/golang/glog"
-	"github.com/ipfs/go-ipfs/core"
-	"github.com/ipfs/go-ipfs/core/coreunix"
-	"github.com/ipfs/go-ipfs/importer/balanced"
-	ihelper "github.com/ipfs/go-ipfs/importer/helpers"
-	"github.com/ipfs/go-ipfs/importer/trickle"
-	"github.com/ipfs/go-ipfs/repo/config"
-	"github.com/ipfs/go-ipfs/repo/fsrepo"
+	"github.com/ipsn/go-ipfs/core"
+	"github.com/ipsn/go-ipfs/core/coreunix"
+	"github.com/ipsn/go-ipfs/importer/balanced"
+	ihelper "github.com/ipsn/go-ipfs/importer/helpers"
+	"github.com/ipsn/go-ipfs/importer/trickle"
+	"github.com/ipsn/go-ipfs/repo/config"
+	"github.com/ipsn/go-ipfs/repo/fsrepo"
 )
 
 type IpfsApi interface {

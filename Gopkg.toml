@@ -30,21 +30,12 @@
   name = "github.com/golang/glog"
 
 [[constraint]]
-  name = "github.com/ipfs/go-ipfs"
-  version = "0.4.17"
-
-[[constraint]]
-  name = "github.com/ipfs/go-ipfs-chunker"
-  version = "0.1.3"
-
-[[constraint]]
-  name = "github.com/ipfs/go-ipld-format"
-  version = "0.6.0"
-
-[[constraint]]
-  branch = "master"
+  revision = "49cda78d23e6837df7697c07766b60fd422216b8"
   name = "github.com/ipsn/go-ipfs"
 
+[[override]]
+  revision = "36e9d2ebbde5e3f13ab2e25625fd453271d6522e" # "v1.1.0"
+  name = "github.com/satori/go.uuid"
 [prune]
   go-tests = true
   unused-packages = true
