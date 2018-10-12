@@ -43,6 +43,10 @@ func main() {
 			log.Fatalf("Failed to start IPFS node: %v", err)
 		}
 
+		log.Infof("addresses: %v", node.PeerHost.ID().String)
+		log.Infof("addresses: %v", node.Identity.String())
+		log.Infof("addresses: %v", node.Identity.Pretty())
+
 		log.Infof("adding cnode")
 		err = node.DAG.Add(context.TODO(), cNode2)
 		if err != nil {
@@ -71,12 +75,16 @@ func main() {
 			log.Fatalf("Failed to start IPFS node: %v", err)
 		}
 
+		log.Infof("addresses: %v", node2.Repo)
+
 		log.Info("sleeping for 15 seconds")
 		time.Sleep(15 * time.Second)
 
 		log.Info("finding providers")
 		peers := node2.DHT.FindProvidersAsync(ctx, cNode.Cid(), 300)
-		log.Infof("peers found: %d", len(peers))
+		go func() {
+			log.Infof("peers found: %v", <-peers)
+		}()
 
 		log.Infof("getting cnode from 2: %v\n", cNode.Cid().String())
 
