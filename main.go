@@ -44,6 +44,13 @@ func main() {
 			panic(fmt.Errorf("error adding file: %v", err))
 		}
 		log.Infof("cid: %s, id: %s", cNode.Cid().Hash().B58String(), id)
+	} else {
+		log.Infof("fetching node... %s", cNode.Cid().Hash().B58String())
+		data, err := ipfsAPI.Get(cNode.Cid().Hash().B58String())
+		if err != nil {
+			panic(fmt.Errorf("error getting: %v", err))
+		}
+		log.Infof("got the data! %d", len(data))
 	}
 
 	select {}

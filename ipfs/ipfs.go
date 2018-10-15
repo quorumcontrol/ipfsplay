@@ -2,10 +2,13 @@ package ipfs
 
 import (
 	"context"
+	"fmt"
 	"io"
 	"os"
 	"path/filepath"
+	"time"
 
+	cid "github.com/ipsn/go-ipfs/gxlibs/github.com/ipfs/go-cid"
 	dag "github.com/ipsn/go-ipfs/merkledag"
 
 	chunk "github.com/ipsn/go-ipfs/gxlibs/github.com/ipfs/go-ipfs-chunker"
@@ -24,6 +27,7 @@ import (
 type IpfsApi interface {
 	Add(r io.Reader) (string, error)
 	AddDag(data []byte) (string, error)
+	Get(cid string) ([]byte, error)
 }
 
 type IpfsCoreApi core.IpfsNode
@@ -94,6 +98,21 @@ func (ipfs *IpfsCoreApi) AddDag(data []byte) (string, error) {
 	err := n.DAG.Add(n.Context(), dataNode)
 
 	return dataNode.Cid().Hash().B58String(), err
+}
+
+func (ipfs *IpfsCoreApi) Get(cidString string) ([]byte, error) {
+	n := ipfs.node()
+	cid, err := cid.Parse(cidString)
+	if err != nil {
+		return nil, fmt.Errorf("error parsing: %v", err)
+	}
+	ctx, cancel := context.WithTimeout(n.Context(), 60*time.Second)
+	defer cancel()
+	nd, err := n.DAG.Get(ctx, cid)
+	if err != nil {
+		return nil, fmt.Errorf("error getting: %v", err)
+	}
+	return nd.RawData(), nil
 }
 
 func addAndPin(ctx context.Context, n *core.IpfsNode, r io.Reader) (string, error) {
