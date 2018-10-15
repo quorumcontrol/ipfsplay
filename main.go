@@ -1,8 +1,8 @@
 package main
 
 import (
-	"bytes"
 	"context"
+	"flag"
 	"fmt"
 
 	"github.com/ipfs/go-ipld-cbor"
@@ -21,6 +21,8 @@ func init() {
 var log = logging.Logger("main")
 
 func main() {
+	shouldPut := flag.Bool("p", false, "Should we put the randevous?")
+	flag.Parse()
 
 	cNode, err := cbornode.WrapObject(map[string]interface{}{"hi": "hi"}, multihash.SHA2_256, -1)
 	if err != nil {
@@ -36,11 +38,13 @@ func main() {
 		panic(fmt.Errorf("error starting ipfs: %v", err))
 	}
 
-	id, err := ipfsAPI.Add(bytes.NewReader(cNode.RawData()))
-	if err != nil {
-		panic(fmt.Errorf("error adding file: %v", err))
+	if *shouldPut {
+		id, err := ipfsAPI.AddDag(cNode.RawData())
+		if err != nil {
+			panic(fmt.Errorf("error adding file: %v", err))
+		}
+		log.Infof("cid: %s, id: %s", cNode.Cid().Hash().B58String(), id)
 	}
-	log.Infof("id: %s", id)
 
 	select {}
 }

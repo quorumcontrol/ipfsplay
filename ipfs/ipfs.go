@@ -6,6 +6,8 @@ import (
 	"os"
 	"path/filepath"
 
+	dag "github.com/ipsn/go-ipfs/merkledag"
+
 	chunk "github.com/ipsn/go-ipfs/gxlibs/github.com/ipfs/go-ipfs-chunker"
 	ipld "github.com/ipsn/go-ipfs/gxlibs/github.com/ipfs/go-ipld-format"
 
@@ -21,6 +23,7 @@ import (
 
 type IpfsApi interface {
 	Add(r io.Reader) (string, error)
+	AddDag(data []byte) (string, error)
 }
 
 type IpfsCoreApi core.IpfsNode
@@ -80,6 +83,17 @@ func closeIpfs(node *core.IpfsNode, repoPath string) {
 func (ipfs *IpfsCoreApi) Add(r io.Reader) (string, error) {
 	node := ipfs.node()
 	return addAndPin(node.Context(), node, r)
+}
+
+func (ipfs *IpfsCoreApi) AddDag(data []byte) (string, error) {
+	n := ipfs.node()
+
+	dataNode := dag.NewRawNode(data)
+	defer n.Blockstore.PinLock().Unlock()
+
+	err := n.DAG.Add(n.Context(), dataNode)
+
+	return dataNode.Cid().Hash().B58String(), err
 }
 
 func addAndPin(ctx context.Context, n *core.IpfsNode, r io.Reader) (string, error) {
