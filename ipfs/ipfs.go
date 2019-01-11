@@ -3,57 +3,45 @@ package ipfs
 import (
 	"context"
 	"fmt"
-	"io"
-	"os"
-	"path/filepath"
-	"time"
 
-	cid "github.com/ipsn/go-ipfs/gxlibs/github.com/ipfs/go-cid"
-	dag "github.com/ipsn/go-ipfs/merkledag"
-
-	chunk "github.com/ipsn/go-ipfs/gxlibs/github.com/ipfs/go-ipfs-chunker"
-	ipld "github.com/ipsn/go-ipfs/gxlibs/github.com/ipfs/go-ipld-format"
-
-	"github.com/golang/glog"
 	"github.com/ipsn/go-ipfs/core"
-	"github.com/ipsn/go-ipfs/core/coreunix"
-	"github.com/ipsn/go-ipfs/importer/balanced"
-	ihelper "github.com/ipsn/go-ipfs/importer/helpers"
-	"github.com/ipsn/go-ipfs/importer/trickle"
-	"github.com/ipsn/go-ipfs/repo/config"
-	"github.com/ipsn/go-ipfs/repo/fsrepo"
+	"github.com/ipsn/go-ipfs/core/coreapi"
+	coreiface "github.com/ipsn/go-ipfs/core/coreapi/interface"
 )
-
-type IpfsApi interface {
-	Add(r io.Reader) (string, error)
-	AddDag(data []byte) (string, error)
-	Get(cid string) ([]byte, error)
-}
-
-type IpfsCoreApi core.IpfsNode
 
 const (
 	nBitsForKeypairDefault = 2048
 )
 
-func StartIpfs(ctx context.Context, repoPath string) (*IpfsCoreApi, error) {
-	if !fsrepo.IsInitialized(repoPath) {
-		conf, err := config.Init(os.Stdout, nBitsForKeypairDefault)
-		if err != nil {
-			return nil, err
-		}
-		if err := fsrepo.Init(repoPath, conf); err != nil {
-			return nil, err
-		}
-	}
+func StartIpfs(ctx context.Context, repoPath string) (coreiface.DagAPI, error) {
+	// if !fsrepo.IsInitialized(repoPath) {
+	// 	conf, err := config.Init(os.Stdout, nBitsForKeypairDefault)
+	// 	if err != nil {
+	// 		return nil, fmt.Errorf("error initializing file: %v", err)
+	// 	}
 
-	repo, err := fsrepo.Open(repoPath)
-	if err != nil {
-		return nil, err
-	}
+	// 	transformer, ok := config.Profiles["server"]
+	// 	if !ok {
+	// 		return nil, fmt.Errorf("invalid configuration profile: %s", "server")
+	// 	}
+
+	// 	if err := transformer.Transform(conf); err != nil {
+	// 		return nil, fmt.Errorf("error transforming: %v", err)
+	// 	}
+	// 	fmt.Printf("conf: %v", conf)
+
+	// 	if err := fsrepo.Init(repoPath, conf); err != nil {
+	// 		return nil, fmt.Errorf("error initializng fsrepo: %v", err)
+	// 	}
+	// }
+
+	// repo, err := fsrepo.Open(repoPath)
+	// if err != nil {
+	// 	return nil, fmt.Errorf("error opening repo: %v", err)
+	// }
 
 	ncfg := &core.BuildCfg{
-		Repo:      repo,
+		// Repo:      repo,
 		Online:    true,
 		Permanent: true,
 		Routing:   core.DHTOption,
@@ -61,102 +49,12 @@ func StartIpfs(ctx context.Context, repoPath string) (*IpfsCoreApi, error) {
 
 	node, err := core.NewNode(ctx, ncfg)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("error new node: %v", err)
 	}
 
-	go func() {
-		for {
-			select {
-			case <-ctx.Done():
-				glog.Infof("Closing IPFS...")
-				closeIpfs(node, repoPath)
-				return
-			}
-		}
-	}()
-
-	return (*IpfsCoreApi)(node), nil
-}
-
-func closeIpfs(node *core.IpfsNode, repoPath string) {
-	repoLockFile := filepath.Join(repoPath, fsrepo.LockFile)
-	os.Remove(repoLockFile)
-	node.Close()
-}
-
-func (ipfs *IpfsCoreApi) Add(r io.Reader) (string, error) {
-	node := ipfs.node()
-	return addAndPin(node.Context(), node, r)
-}
-
-func (ipfs *IpfsCoreApi) AddDag(data []byte) (string, error) {
-	n := ipfs.node()
-
-	dataNode := dag.NewRawNode(data)
-	defer n.Blockstore.PinLock().Unlock()
-
-	err := n.DAG.Add(n.Context(), dataNode)
-
-	return dataNode.Cid().Hash().B58String(), err
-}
-
-func (ipfs *IpfsCoreApi) Get(cidString string) ([]byte, error) {
-	n := ipfs.node()
-	cid, err := cid.Parse(cidString)
+	api, err := coreapi.NewCoreAPI(node)
 	if err != nil {
-		return nil, fmt.Errorf("error parsing: %v", err)
+		return nil, fmt.Errorf("error creating node: %v", err)
 	}
-	ctx, cancel := context.WithTimeout(n.Context(), 60*time.Second)
-	defer cancel()
-	nd, err := n.DAG.Get(ctx, cid)
-	if err != nil {
-		return nil, fmt.Errorf("error getting: %v", err)
-	}
-	return nd.RawData(), nil
-}
-
-func addAndPin(ctx context.Context, n *core.IpfsNode, r io.Reader) (string, error) {
-	defer n.Blockstore.PinLock().Unlock()
-
-	fileAdder, err := coreunix.NewAdder(n.Context(), n.Pinning, n.Blockstore, n.DAG)
-	if err != nil {
-		return "", err
-	}
-
-	chnk, err := chunk.FromString(r, fileAdder.Chunker)
-	if err != nil {
-		return "", err
-	}
-
-	params := ihelper.DagBuilderParams{
-		Dagserv:   n.DAG,
-		RawLeaves: fileAdder.RawLeaves,
-		Maxlinks:  ihelper.DefaultLinksPerBlock,
-		NoCopy:    fileAdder.NoCopy,
-		Prefix:    fileAdder.Prefix,
-	}
-
-	var node ipld.Node
-	if fileAdder.Trickle {
-		node, err = trickle.Layout(params.New(chnk))
-		if err != nil {
-			return "", err
-		}
-	} else {
-		node, err = balanced.Layout(params.New(chnk))
-		if err != nil {
-			return "", err
-		}
-	}
-
-	err = fileAdder.PinRoot()
-	if err != nil {
-		return "", err
-	}
-
-	return node.Cid().String(), nil
-}
-
-func (ipfs *IpfsCoreApi) node() *core.IpfsNode {
-	return (*core.IpfsNode)(ipfs)
+	return api.Dag(), nil
 }
