@@ -25,13 +25,17 @@
 #   unused-packages = true
 
 
+# [[constraint]]
+#   branch = "master"
+#   name = "github.com/golang/glog"
+
 [[constraint]]
-  revision = "49cda78d23e6837df7697c07766b60fd422216b8"
+  revision = "3eb841aa8248d7bfd1322677bb60afdcf9ed41fc"
   name = "github.com/ipsn/go-ipfs"
 
-[[override]]
-  revision = "36e9d2ebbde5e3f13ab2e25625fd453271d6522e" # "v1.1.0"
-  name = "github.com/satori/go.uuid"
-
-[prune]
-  unused-packages = true
+# [[override]]
+#   revision = "36e9d2ebbde5e3f13ab2e25625fd453271d6522e" # "v1.1.0"
+#   name = "github.com/satori/go.uuid"
+# [prune]
+  # go-tests = true
+  # unused-packages = true
